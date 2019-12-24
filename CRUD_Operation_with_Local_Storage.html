@@ -248,20 +248,24 @@
     }
 
     function delete_record(id, event) {
-        $('#formSubmit').text("Add"); //In case user decide to edit and without update data directly press delete
+	
+		if(confirm("Are You Sure to Delete This Record")){
+			$('#formSubmit').text("Add"); //In case user decide to edit and without update data directly press delete
 
-        /*Start Get Old Data From LocalStorage*/
-        var old_data = localStorage.getItem("data");
-        old_data = JSON.parse(old_data);
-        /*End Get Old Data From LocalStorage*/
+			/*Start Get Old Data From LocalStorage*/
+			var old_data = localStorage.getItem("data");
+			old_data = JSON.parse(old_data);
+			/*End Get Old Data From LocalStorage*/
 
-        var select_array_index = old_data.findIndex(old_data => old_data.id === id);
+			var select_array_index = old_data.findIndex(old_data => old_data.id === id);
 
-        old_data.splice(select_array_index, 1);
-        event.preventDefault();
-        localStorage.clear();
-        localStorage.setItem("data", JSON.stringify(old_data));
-        printTable();
+			old_data.splice(select_array_index, 1);
+			event.preventDefault();
+			localStorage.clear();
+			localStorage.setItem("data", JSON.stringify(old_data));
+			printTable();
+		}
+        
     }
 
     function printTable() {
