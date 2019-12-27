@@ -1,23 +1,24 @@
 <html>
 <head>
-    <title>VueJs Instance</title>
-
+    <title>CRUD Operation</title>
     <style>
-        #addEmployeeForm {
+        #add_emp_form {
             margin: 0 auto;
             width: 400px;
         }
+
         #middle {
             text-align: center;
         }
+
         .error {
             color: red;
             font-weight: bold;
+            white-space: pre;
+            text-transform: lowercase;
         }
     </style>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"/>
-
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
@@ -25,7 +26,7 @@
 </head>
 <body>
 
-<form action="" method="GET" id="addEmployeeForm" name="addEmployeeFormName" class="cmxform">
+<form action="" method="POST" id="add_emp_form" name="add_emp_form" class="cmxform">
 
     <table border="2" cell-spacing="3" cellpadding="5">
         <tr>
@@ -33,19 +34,19 @@
         </tr>
         <tr>
             <td><strong>Employee Name</strong></td>
-            <td><input type="text" name="employeename" id="empolyee_name" placeholder="Enter employee name "/></td>
+            <td><input type="text" name="name" id="name" placeholder="Enter employee name "/></td>
         </tr>
         <tr>
             <td><strong>Gender</strong></td>
             <td>
-                <input type="radio" name="gender" id="male" value="male" checked/> Male
-                <input type="radio" name="gender" id="female" value="female"/> Female
+                <input type="radio" name="gender" value="male" checked/> Male
+                <input type="radio" name="gender" value="female"/> Female
             </td>
         </tr>
         <tr>
-            <td><strong>Dept</strong></td>
+            <td><strong>department</strong></td>
             <td>
-                <select id="department" name="dept">
+                <select id="department" name="department">
                     <option value="Sales">Sales</option>
                     <option value="Admin">Admin</option>
                     <option value="HR">HR</option>
@@ -56,9 +57,9 @@
         <tr>
             <td><strong>Hobby</strong></td>
             <td>
-                <input type="checkbox" name="hobby[]" value="Reading" id="reading"/>Reading
-                <input type="checkbox" name="hobby[]" value="Writing" id="writing"/>Writing
-                <input type="checkbox" name="hobby[]" value="Dancing" id="dancing"/>Dancing
+                <input type="checkbox" name="hobby[]" value="Reading"/>Reading
+                <input type="checkbox" name="hobby[]" value="Writing"/>Writing
+                <input type="checkbox" name="hobby[]" value="Dancing"/>Dancing
             </td>
         </tr>
         <tr>
@@ -71,13 +72,13 @@
         <tr>
             <td><strong>Mobile No</strong></td>
             <td>
-                <input type="text" name="mobilenumber" id="mobilenumber"/>
+                <input type="text" name="mobile_number" id="mobile_number"/>
             </td>
         </tr>
         <input type="hidden" id="emp_id_value" name="emp_id_value" value="0">
         <tr>
             <td colspan="2" id="middle">
-                <button type="submit" value="submit" id="formSubmit">Add</button>
+                <button type="submit" value="submit" id="form_submit">Add</button>
             </td>
         </tr>
     </table>
@@ -89,33 +90,33 @@
 
 
     $(document).ready(function () {
-        $("form[name='addEmployeeFormName']").validate({
+        $('form[name=\'add_emp_form\']').validate({
             rules: {
-                employeename: {
+                name: {
                     required: true
                 },
-                mobilenumber: {
+                mobile_number: {
                     required: true,
                     number: true,
-                    maxlength: 10,
+                    maxlength: 11,
                 },
                 email: {
                     required: true,
                     email: true,
                 },
             },
-            messages: {
-                employeename: {
-                    required: '<div class="error">Enter User Name</div>'
-                },
-                mobilenumber: {
-                    required: '<div class="error">Enter Mob. No</div>',
-                    number: '<div class="error">Enter Numeric Data Only</div>',
-                    maxlength: '<div class="error">Dont Enter more than 10 chararcter</div>',
-                }
-            },
             submitHandler: function (form) {
                 add();
+            },
+            messages: {
+                name: {
+                    required: '<div class="error">enter user name</div>'
+                },
+                mobile_number: {
+                    required: '<div class="error">enter mobile no.</div>',
+                    number: '<div class="error">enter numeric data only</div>',
+                    maxlength: '<div class="error">dont enter more than 11 character </div>',
+                }
             }
         });
     });
@@ -144,18 +145,18 @@
 
             /*Start To Add New Record */
             var emp_id = random();
-            var emp_name = $("input[name='employeename'").val();
-            var emp_gender = $("input[name='gender']:checked").val();
-            var emp_department = $("#department").val();
+            var emp_name = $('input[name=\'name\'').val();
+            var emp_gender = $('input[name=\'gender\']:checked').val();
+            var emp_department = $('#department').val();
             var emp_hobby = [];
             $.each($("input[name='hobby[]']:checked"), function () {
                 emp_hobby.push($(this).val());
             });
-            var emp_email = $("input[name='email'").val();
-            var emp_mobile = $("input[name='mobilenumber'").val();
+            var emp_email = $('input[name=\'email\'').val();
+            var emp_mobile = $('input[name=\'mobile_number\'').val();
 
 
-            var edit_delete_string = "<input type='button' value='Edit' onclick='edit_record(" + emp_id + ")' />&nbsp;&nbsp;<input type='button' value='Delete' onclick='delete_record(" + emp_id + ",event" + ")'/>";
+            var edit_delete_string = "<input type='button' value='Edit' onclick='editRecord(" + emp_id +",event" + ")' />&nbsp;&nbsp;<input type='button' value='Delete' onclick='deleteRecord(" + emp_id + ",event" + ")'/>";
             old_data.push({
                 id: emp_id,
                 employee_name: emp_name,
@@ -163,7 +164,7 @@
                 department: emp_department,
                 hobby: emp_hobby,
                 email: emp_email,
-                mobilenumber: emp_mobile,
+                mobile_number: emp_mobile,
                 action: edit_delete_string
             });
 
@@ -174,8 +175,10 @@
             localStorage.setItem("data", JSON.stringify(old_data));
             /*Start Store Data Object into LocalStorage*/
             printTable();
-            event.preventDefault();
-            $('#addEmployeeForm').trigger("reset");// clear all form value
+
+            //event.preventDefault();
+            $('#add_emp_form').trigger("reset");// clear all form value
+
         } else {
             /*Start Get Old Data From LocalStorage*/
             var old_data = localStorage.getItem("data");
@@ -187,31 +190,33 @@
 
             var select_array_index = old_data.findIndex(old_data => old_data.id === parseInt(id));
 
-            old_data[select_array_index].employee_name = $("input[name='employeename'").val();
-            old_data[select_array_index].gender = $("input[name='gender']:checked").val();
-            old_data[select_array_index].department = $("#department").val();
+            old_data[select_array_index].employee_name = $('input[name=\'name\'').val();
+            old_data[select_array_index].gender = $('input[name=\'gender\']:checked').val();
+            old_data[select_array_index].department = $('#department').val();
             var emp_hobby = [];
             $.each($("input[name='hobby[]']:checked"), function () {
                 emp_hobby.push($(this).val());
             });
             old_data[select_array_index].hobby = emp_hobby;
-            old_data[select_array_index].email = $("input[name='email'").val();
-            old_data[select_array_index].mobilenumber = $("input[name='mobilenumber'").val();
+            old_data[select_array_index].email = $('input[name=\'email\'').val();
+            old_data[select_array_index].mobile_number = $('input[name=\'mobile_number\'').val();
+
+            console.log(old_data[select_array_index]);
 
 
-            $('#emp_id_value').val(0);
-            $('#formSubmit').text("Add");
+            $("#emp_id_value").val(0);
+            $("#form_submit").text("Add");
             event.preventDefault();//prevent Default Behaviour of DOM
 
             localStorage.clear();
             localStorage.setItem("data", JSON.stringify(old_data));
             printTable();
-            $('#addEmployeeForm').trigger("reset");// clear all form value
+            $('#add_emp_form').trigger("reset");// clear all form value
         }
 
     }
 
-    function edit_record(id) {
+    function editRecord(id) {
 
         /*Start Get Old Data From LocalStorage*/
         var old_data = localStorage.getItem("data");
@@ -225,47 +230,47 @@
         var old_department = old_data[select_array_index].department;
         var old_hobby = old_data[select_array_index].hobby;
         var old_email = old_data[select_array_index].email;
-        var old_mobile = old_data[select_array_index].mobilenumber;
+        var old_mobile = old_data[select_array_index].mobile_number;
 
         /*Start Display Old Record Value*/
 
-        $('#emp_id_value').val(id);
-        $('input[name="employeename"]').val(old_ename);
+        $("#emp_id_value").val(id);
+        $("input[name=\"name\"]").val(old_ename);
 
-        $('input[name="gender"][value="' + old_gender + '"]').prop('checked', true);
+        $("input[name=\"gender\"][value=\"" + old_gender + '"]').prop('checked', true);
         for (var i = 0; i < old_hobby.length; i++) {
 
             $('input:checkbox[name="hobby[]"][value="' + old_hobby[i] + '"]').prop('checked', true);
         }
-        $('select[name^="dept"] option[value="' + old_department + '"]').attr("selected", "selected");
+        $('select[name^="department"] option[value="' + old_department + '"]').attr("selected", "selected");
 
         $('#email').val(old_email);
-        $('#mobilenumber').val(old_mobile);
-        $('#formSubmit').text("Update");
+        $('#mobile_number').val(old_mobile);
+        $('#form_submit').text("Update");
 
         /*End Display Old Record Value*/
 
     }
 
-    function delete_record(id, event) {
-	
-		if(confirm("Are You Sure to Delete This Record")){
-			$('#formSubmit').text("Add"); //In case user decide to edit and without update data directly press delete
+    function deleteRecord(id, event) {
 
-			/*Start Get Old Data From LocalStorage*/
-			var old_data = localStorage.getItem("data");
-			old_data = JSON.parse(old_data);
-			/*End Get Old Data From LocalStorage*/
+        if (confirm("Are You Sure to Delete This Record")) {
+            $("#form_submit").text("Add"); //In case user decide to edit and without update data directly press delete
 
-			var select_array_index = old_data.findIndex(old_data => old_data.id === id);
+            /*Start Get Old Data From LocalStorage*/
+            var old_data = localStorage.getItem("data");
+            old_data = JSON.parse(old_data);
+            /*End Get Old Data From LocalStorage*/
 
-			old_data.splice(select_array_index, 1);
-			event.preventDefault();
-			localStorage.clear();
-			localStorage.setItem("data", JSON.stringify(old_data));
-			printTable();
-		}
-        
+            var select_array_index = old_data.findIndex(old_data => old_data.id === id);
+
+            old_data.splice(select_array_index, 1);
+            event.preventDefault();
+            localStorage.clear();
+            localStorage.setItem("data", JSON.stringify(old_data));
+            printTable();
+        }
+
     }
 
     function printTable() {
@@ -280,14 +285,14 @@
             {"mDataProp": "department", sTitle: "Department", sType: "string"},
             {"mDataProp": "hobby", sTitle: "Hobby", sType: "string"},
             {"mDataProp": "email", sTitle: "email", sType: "string"},
-            {"mDataProp": "mobilenumber", sTitle: "Mobile", sType: "numeric"},
+            {"mDataProp": "mobile_number", sTitle: "Mobile", sType: "numeric"},
             {"mDataProp": "action", sTitle: "Action", sType: "string"},
         ];
         $('#example').DataTable({
             "bJQueryUI": true,
             "bDeferRender": true,
             "bInfo": false,
-            "bSort": false,
+            "bSort": true,
             "bDestroy": true,
             "bFilter": false,
             "bPagination": false,
